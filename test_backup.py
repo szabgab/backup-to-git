@@ -17,6 +17,9 @@ class TBackup(backup.Backup):
     def copy_file(self, src, trg):
        self.events.append(['copy_file', src, trg])
 
+    def make_dir(self, trg):
+       self.events.append(['make_dir', trg])
+
 def test_backup(tmpdir):
     print(tmpdir)
     source_dir = os.path.join(tmpdir, 'src')
@@ -40,9 +43,25 @@ def test_backup(tmpdir):
     with open(os.path.join(source_dir, 'a.txt'), 'w') as fh:
        fh.write('hello')
 
-
     bck = TBackup()
     bck.main()
     assert bck.events == [
         ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
     ]
+
+
+    os.mkdir(os.path.join(source_dir, 'songs'))
+    with open(os.path.join(source_dir, 'songs', 'yesterday.txt'), 'w') as fh:
+       fh.write('Beatles')
+
+    bck = TBackup()
+    bck.main()
+    print(bck.events)
+    assert bck.events[0:3] == [
+        ['make_dir',  os.path.join(target_dir, 'songs')],
+        ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
+        ['copy_file', os.path.join(source_dir, 'songs', 'yesterday.txt'), os.path.join(target_dir, 'songs', 'yesterday.txt')],
+    ]
+
+
+

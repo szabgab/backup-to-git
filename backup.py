@@ -20,6 +20,10 @@ class Backup(object):
     def copy_file(self, src, trg):
         logging.info('Copy file {} to {}'.format(src, trg))
         shutil.copy(src, trg)
+    def make_dir(self, trg):
+        logging.info('Make dir {}'.format(trg))
+        if not os.path.exists(trg):
+            os.makedir(trg)
 
     def main(self):
         logging.basicConfig(level = logging.INFO)
@@ -45,25 +49,13 @@ class Backup(object):
             exit('Source directory "{source_dir}" does not exist'.format(source_dir = source_dir))
 
         for dirName, subdirList, fileList in os.walk(source_dir):
-            pass
-            #for d in subdirList:
-            #    print('DIR {}'.format(d))
-            #print('Found directory: {}'.format(dirName))
+            for dr in subdirList:
+                self.make_dir( os.path.join(target_dir, dr) )
+            dir_part = dirName[len(source_dir)+1:]
             for fname in fileList:
-                self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, fname))
+                self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, dir_part, fname))
 
 
-    #    for thing in os.listdir(source_dir):
-    #        logging.info(thing)
-    #        path_to = os.path.join(source_dir, thing)
-    #        if os.path.isfile(path_to):
-    #            logging.info('Copy file {} to {}'.format(path_to, target_dir))
-    #            shutil.copy(path_to, target_dir)
-    #        elif os.path.isdir(path_to):
-    #            logging.info('Copy tree {} to {}'.format(path_to, target_dir))
-    #            shutil.copytree(path_to, target_dir)
-    #        else:
-    #            print('Not file and not directory {}'.format(thing))
         os.chdir(target_dir)
         if args.git:
             status = subprocess.check_output([git, 'status', '--porcelain'])
