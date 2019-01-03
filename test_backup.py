@@ -25,5 +25,5 @@ def test_backup(tmpdir):
 
     print(sys.argv)
     sys.argv = ['backup', '--config', config_file]
-    backup.main()
+    backup.Backup().main()
     assert True
