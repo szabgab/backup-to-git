@@ -17,6 +17,10 @@ Test the various cases.
 '''
 
 class Backup(object):
+    def copy_file(self, src, trg):
+        logging.info('Copy file {} to {}'.format(src, trg))
+        shutil.copy(src, trg)
+
     def main(self):
         logging.basicConfig(level = logging.INFO)
 
@@ -45,8 +49,8 @@ class Backup(object):
             #for d in subdirList:
             #    print('DIR {}'.format(d))
             #print('Found directory: {}'.format(dirName))
-            #for fname in fileList:
-            #    print('\t{}'.format(fname))
+            for fname in fileList:
+                self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, fname))
 
 
     #    for thing in os.listdir(source_dir):

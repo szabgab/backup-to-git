@@ -9,6 +9,14 @@ import backup
 # run the backup
 # check the results
 #backup.run()
+
+class TBackup(backup.Backup):
+    def __init__(self):
+       self.events = []
+
+    def copy_file(self, src, trg):
+       self.events.append(['copy_file', src, trg])
+
 def test_backup(tmpdir):
     print(tmpdir)
     source_dir = os.path.join(tmpdir, 'src')
@@ -25,5 +33,16 @@ def test_backup(tmpdir):
 
     print(sys.argv)
     sys.argv = ['backup', '--config', config_file]
-    backup.Backup().main()
-    assert True
+    bck = TBackup()
+    bck.main()
+    assert bck.events == []
+
+    with open(os.path.join(source_dir, 'a.txt'), 'w') as fh:
+       fh.write('hello')
+
+
+    bck = TBackup()
+    bck.main()
+    assert bck.events == [
+        ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
+    ]
