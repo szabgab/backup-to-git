@@ -23,7 +23,7 @@ class Backup(object):
     def make_dir(self, trg):
         logging.info('Make dir {}'.format(trg))
         if not os.path.exists(trg):
-            os.makedir(trg)
+            os.mkdir(trg)
 
     def main(self):
         logging.basicConfig(level = logging.INFO)
