@@ -21,10 +21,11 @@ class TBackup(backup.Backup):
        self.events.append(['make_dir', trg])
 
 def test_backup(tmpdir):
-    print(tmpdir)
-    source_dir = os.path.join(tmpdir, 'src')
-    target_dir = os.path.join(tmpdir, 'target')
-    config_file = os.path.join(tmpdir, 'cfg.json')
+    tmp_dir = str(tmpdir)  # Needed for Python 3.5 and older
+    print(tmp_dir)
+    source_dir = os.path.join(tmp_dir, 'src')
+    target_dir = os.path.join(tmp_dir, 'target')
+    config_file = os.path.join(tmp_dir, 'cfg.json')
     os.mkdir(source_dir)
     os.mkdir(target_dir)
 
