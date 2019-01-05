@@ -57,11 +57,26 @@ def test_backup(tmpdir):
     bck = TBackup()
     bck.main()
     print(bck.events)
-    assert bck.events[0:3] == [
+    assert bck.events == [
         ['make_dir',  os.path.join(target_dir, 'songs')],
         ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
         ['copy_file', os.path.join(source_dir, 'songs', 'yesterday.txt'), os.path.join(target_dir, 'songs', 'yesterday.txt')],
     ]
 
+
+    os.mkdir(os.path.join(source_dir, 'songs', 'spanish'))
+    with open(os.path.join(source_dir, 'songs', 'spanish', 'despacio.txt'), 'w') as fh:
+       fh.write('Slowly!')
+
+    bck = TBackup()
+    bck.main()
+    print(bck.events)
+    assert bck.events == [
+        ['make_dir',  os.path.join(target_dir, 'songs')],
+        ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
+        ['make_dir',  os.path.join(target_dir, 'songs', 'spanish')],
+        ['copy_file', os.path.join(source_dir, 'songs', 'yesterday.txt'), os.path.join(target_dir, 'songs', 'yesterday.txt')],
+        ['copy_file', os.path.join(source_dir, 'songs', 'spanish', 'despacio.txt'), os.path.join(target_dir, 'songs', 'spanish', 'despacio.txt')],
+    ]
 
 

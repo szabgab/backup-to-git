@@ -49,9 +49,9 @@ class Backup(object):
             exit('Source directory "{source_dir}" does not exist'.format(source_dir = source_dir))
 
         for dirName, subdirList, fileList in os.walk(source_dir):
-            for dr in subdirList:
-                self.make_dir( os.path.join(target_dir, dr) )
             dir_part = dirName[len(source_dir)+1:]
+            for dr in subdirList:
+                self.make_dir( os.path.join(target_dir, dir_part, dr) )
             for fname in fileList:
                 self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, dir_part, fname))
 
