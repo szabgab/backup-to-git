@@ -13,7 +13,6 @@ Allow more flexible configurations.
 Handle also the removal of files and directories.
 Logging
 Error handling
-Test the various cases.
 '''
 
 class Backup(object):
@@ -47,6 +46,7 @@ class Backup(object):
 
         for dirName, subdirList, fileList in os.walk(source_dir):
             dir_part = dirName[len(source_dir)+1:]
+
             for dr in subdirList:
                 trg = os.path.join(target_dir, dir_part, dr)
                 logging.info('Make dir {}'.format(trg))
@@ -59,14 +59,34 @@ class Backup(object):
                 logging.info('Copy file {} to {}'.format(src, trg))
                 shutil.copy(src, trg)
 
-        #for dirName, subdirList, fileList in os.walk(target_dir):
-        #    dir_part = dirName[len(ce_dir)+1:]
-        #    for dr in subdirList:
-        #        print( os.path.join(source_dir, dir_part, dr) )
-        #        if args.git:
-        #            git rm -rf
-        #    for fname in fileList:
-        #        self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, dir_part, fname))
+        for dirName, subdirList, fileList in os.walk(target_dir):
+            if '.git' in subdirList:
+                subdirList.remove('.git')
+            dir_part = dirName[len(target_dir)+1:]
+            print("DIR: " + dir_part)
+            for dr in subdirList:
+                trg = os.path.join(target_dir, dir_part, dr)
+                src = os.path.join(source_dir, dir_part, dr)
+                if not os.path.exists(src):
+                    logging.info('Remove {}'.format(trg))
+                    if args.git:
+                        rm_dir = subprocess.check_output([git, 'rm', '-rf', trg])
+                    else:
+                        shutil.rmtree(trg)
+
+            for fname in fileList:
+                src = os.path.join(source_dir, dir_part, fname)
+                trg = os.path.join(dirName, fname)
+                print("SRC: " + src)
+                print("TRG: " + trg)
+                if not os.path.exists(src):
+                    logging.info('Remove {}'.format(trg))
+                    if args.git:
+                        rm_dir = subprocess.check_output([git, 'rm', trg])
+                    else:
+                        os.remove(trg)
+
+
 
         if args.git:
             status = subprocess.check_output([git, 'status', '--porcelain'])

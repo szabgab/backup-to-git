@@ -31,7 +31,7 @@ def test_backup(tmpdir):
        fh.write('head')
 
 
-    print(sys.argv)
+    #print(sys.argv)
     sys.argv = ['backup', '--config', config_file]
     bck = Backup()
     bck.main()
@@ -75,7 +75,8 @@ def test_backup(tmpdir):
     assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
 
 
-    # How do we deal with the removal of files and directories?
+
+    # Check if we deal with the removal of files and directories properly?
     with open(os.path.join(source_dir, 'songs', 'spanish', 'fast.txt'), 'w') as fh:
        fh.write('Fast!')
     os.remove(os.path.join(source_dir, 'songs', 'spanish', 'rapido.txt'))
@@ -84,10 +85,7 @@ def test_backup(tmpdir):
     bck = Backup()
     bck.main()
     assert set(os.listdir(target_dir)) == set(['.git', 'songs', 'a.txt'])
-    #assert set(os.listdir(os.path.join(target_dir, 'songs'))) == set(['yesterday.txt', 'spanish'])
-    #assert set(os.listdir(os.path.join(target_dir, 'songs', 'spanish'))) == set(['despacio.txt', 'fast.txt'])
-    #assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
-
-
-
+    assert set(os.listdir(os.path.join(target_dir, 'songs'))) == set(['yesterday.txt', 'spanish'])
+    assert set(os.listdir(os.path.join(target_dir, 'songs', 'spanish'))) == set(['despacio.txt', 'fast.txt'])
+    assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
 
