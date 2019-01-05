@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+install:
+  - pip install pytest
+#  - pip install pytest-cov
+#  - pip install coveralls
+#  - pip install -r requirements.txt
+script:
+#  - pytest --cov=cat/
+  - pytest
+#after_success:
+#  - coveralls
