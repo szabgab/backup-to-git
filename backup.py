@@ -55,6 +55,14 @@ class Backup(object):
             for fname in fileList:
                 self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, dir_part, fname))
 
+        #for dirName, subdirList, fileList in os.walk(target_dir):
+        #    dir_part = dirName[len(ce_dir)+1:]
+        #    for dr in subdirList:
+        #        print( os.path.join(source_dir, dir_part, dr) )
+        #        if args.git:
+        #            git rm -rf
+        #    for fname in fileList:
+        #        self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, dir_part, fname))
 
         os.chdir(target_dir)
         if args.git:

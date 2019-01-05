@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import sys
 
 from backup import Backup
@@ -60,13 +61,33 @@ def test_backup(tmpdir):
        fh.write('Slowly!')
     with open(os.path.join(source_dir, 'songs', 'spanish', 'rapido.txt'), 'w') as fh:
        fh.write('Fast!')
+    os.mkdir(os.path.join(source_dir, 'songs', 'hungarian'))
+    with open(os.path.join(source_dir, 'songs', 'hungarian', 'macska-az-uton.txt'), 'w') as fh:
+       fh.write('Tul van a dolgon')
 
     bck = Backup()
     bck.main()
     assert set(os.listdir(target_dir)) == set(['.git', 'songs', 'a.txt'])
-    assert set(os.listdir(os.path.join(target_dir, 'songs'))) == set(['yesterday.txt', 'spanish'])
+    assert set(os.listdir(os.path.join(target_dir, 'songs'))) == set(['yesterday.txt', 'spanish', 'hungarian'])
     assert set(os.listdir(os.path.join(target_dir, 'songs', 'spanish'))) == set(['despacio.txt', 'rapido.txt'])
+    assert set(os.listdir(os.path.join(target_dir, 'songs', 'hungarian'))) == set(['macska-az-uton.txt'])
 
     assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
+
+
+    # How do we deal with the removal of files and directories?
+    with open(os.path.join(source_dir, 'songs', 'spanish', 'fast.txt'), 'w') as fh:
+       fh.write('Fast!')
+    os.remove(os.path.join(source_dir, 'songs', 'spanish', 'rapido.txt'))
+    shutil.rmtree(os.path.join(source_dir, 'songs', 'hungarian'))
+
+    bck = Backup()
+    bck.main()
+    assert set(os.listdir(target_dir)) == set(['.git', 'songs', 'a.txt'])
+    #assert set(os.listdir(os.path.join(target_dir, 'songs'))) == set(['yesterday.txt', 'spanish'])
+    #assert set(os.listdir(os.path.join(target_dir, 'songs', 'spanish'))) == set(['despacio.txt', 'fast.txt'])
+    #assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
+
+
 
 
