@@ -40,6 +40,11 @@ class Backup(object):
         if not os.path.exists(source_dir):
             exit('Source directory "{source_dir}" does not exist'.format(source_dir = source_dir))
 
+        if not os.path.exists(target_dir):
+            exit('Target directory "{target_dir}" does not exist'.format(target_dir = target_dir))
+
+        os.chdir(target_dir)
+
         for dirName, subdirList, fileList in os.walk(source_dir):
             dir_part = dirName[len(source_dir)+1:]
             for dr in subdirList:
@@ -63,7 +68,6 @@ class Backup(object):
         #    for fname in fileList:
         #        self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, dir_part, fname))
 
-        os.chdir(target_dir)
         if args.git:
             status = subprocess.check_output([git, 'status', '--porcelain'])
             print(status)
