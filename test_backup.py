@@ -2,23 +2,12 @@ import json
 import os
 import sys
 
-import backup
+from backup import Backup
 
 # create a temporary directory for the source files
 # create a temp directory for the git repository
 # run the backup
-# check the results
-#backup.run()
-
-class TBackup(backup.Backup):
-    def __init__(self):
-       self.events = []
-
-    def copy_file(self, src, trg):
-       self.events.append(['copy_file', src, trg])
-
-    def make_dir(self, trg):
-       self.events.append(['make_dir', trg])
+# check the results: check if the correct files exist in the target area after a run.
 
 def test_backup(tmpdir):
     tmp_dir = str(tmpdir)  # Needed for Python 3.5 and older
@@ -35,49 +24,49 @@ def test_backup(tmpdir):
 	   'target': target_dir,
        }, fh)
 
+   # pretend the git repository
+    os.mkdir(os.path.join(target_dir, '.git'))
+    with open(os.path.join(target_dir, '.git', 'HEAD'), 'w') as fh:
+       fh.write('head')
+
+
     print(sys.argv)
     sys.argv = ['backup', '--config', config_file]
-    bck = TBackup()
+    bck = Backup()
     bck.main()
-    assert bck.events == []
+    assert os.listdir(target_dir) == ['.git']
+
 
     with open(os.path.join(source_dir, 'a.txt'), 'w') as fh:
        fh.write('hello')
 
-    bck = TBackup()
+    bck = Backup()
     bck.main()
-    assert bck.events == [
-        ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
-    ]
+    assert os.listdir(target_dir) == ['.git', 'a.txt']
 
 
     os.mkdir(os.path.join(source_dir, 'songs'))
     with open(os.path.join(source_dir, 'songs', 'yesterday.txt'), 'w') as fh:
        fh.write('Beatles')
 
-    bck = TBackup()
+    bck = Backup()
     bck.main()
-    print(bck.events)
-    assert bck.events == [
-        ['make_dir',  os.path.join(target_dir, 'songs')],
-        ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
-        ['copy_file', os.path.join(source_dir, 'songs', 'yesterday.txt'), os.path.join(target_dir, 'songs', 'yesterday.txt')],
-    ]
+    assert os.listdir(target_dir) == ['.git', 'songs', 'a.txt']
+    assert os.listdir(os.path.join(target_dir, 'songs')) == ['yesterday.txt']
 
 
     os.mkdir(os.path.join(source_dir, 'songs', 'spanish'))
     with open(os.path.join(source_dir, 'songs', 'spanish', 'despacio.txt'), 'w') as fh:
        fh.write('Slowly!')
+    with open(os.path.join(source_dir, 'songs', 'spanish', 'rapido.txt'), 'w') as fh:
+       fh.write('Fast!')
 
-    bck = TBackup()
+    bck = Backup()
     bck.main()
-    print(bck.events)
-    assert bck.events == [
-        ['make_dir',  os.path.join(target_dir, 'songs')],
-        ['copy_file', os.path.join(source_dir, 'a.txt'), os.path.join(target_dir, 'a.txt')],
-        ['make_dir',  os.path.join(target_dir, 'songs', 'spanish')],
-        ['copy_file', os.path.join(source_dir, 'songs', 'yesterday.txt'), os.path.join(target_dir, 'songs', 'yesterday.txt')],
-        ['copy_file', os.path.join(source_dir, 'songs', 'spanish', 'despacio.txt'), os.path.join(target_dir, 'songs', 'spanish', 'despacio.txt')],
-    ]
+    assert os.listdir(target_dir) == ['.git', 'songs', 'a.txt']
+    assert os.listdir(os.path.join(target_dir, 'songs')) == ['yesterday.txt', 'spanish']
+    assert os.listdir(os.path.join(target_dir, 'songs', 'spanish')) == ['despacio.txt', 'rapido.txt']
+
+    assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
 
 
