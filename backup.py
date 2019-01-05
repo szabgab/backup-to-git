@@ -69,10 +69,7 @@ class Backup(object):
                 src = os.path.join(source_dir, dir_part, dr)
                 if not os.path.exists(src):
                     logging.info('Remove {}'.format(trg))
-                    if args.git:
-                        rm_dir = subprocess.check_output([git, 'rm', '-rf', trg])
-                    else:
-                        shutil.rmtree(trg)
+                    shutil.rmtree(trg)
 
             for fname in fileList:
                 src = os.path.join(source_dir, dir_part, fname)
@@ -81,10 +78,7 @@ class Backup(object):
                 print("TRG: " + trg)
                 if not os.path.exists(src):
                     logging.info('Remove {}'.format(trg))
-                    if args.git:
-                        rm_dir = subprocess.check_output([git, 'rm', trg])
-                    else:
-                        os.remove(trg)
+                    os.remove(trg)
 
 
 
