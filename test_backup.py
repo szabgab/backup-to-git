@@ -42,7 +42,7 @@ def test_backup(tmpdir):
 
     bck = Backup()
     bck.main()
-    assert os.listdir(target_dir) == ['.git', 'a.txt']
+    assert set(os.listdir(target_dir)) == set(['.git', 'a.txt'])
 
 
     os.mkdir(os.path.join(source_dir, 'songs'))
@@ -51,7 +51,7 @@ def test_backup(tmpdir):
 
     bck = Backup()
     bck.main()
-    assert os.listdir(target_dir) == ['.git', 'songs', 'a.txt']
+    assert set(os.listdir(target_dir)) == set(['.git', 'songs', 'a.txt'])
     assert os.listdir(os.path.join(target_dir, 'songs')) == ['yesterday.txt']
 
 
@@ -63,9 +63,9 @@ def test_backup(tmpdir):
 
     bck = Backup()
     bck.main()
-    assert os.listdir(target_dir) == ['.git', 'songs', 'a.txt']
-    assert os.listdir(os.path.join(target_dir, 'songs')) == ['yesterday.txt', 'spanish']
-    assert os.listdir(os.path.join(target_dir, 'songs', 'spanish')) == ['despacio.txt', 'rapido.txt']
+    assert set(os.listdir(target_dir)) == set(['.git', 'songs', 'a.txt'])
+    assert set(os.listdir(os.path.join(target_dir, 'songs'))) == set(['yesterday.txt', 'spanish'])
+    assert set(os.listdir(os.path.join(target_dir, 'songs', 'spanish'))) == set(['despacio.txt', 'rapido.txt'])
 
     assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
 
