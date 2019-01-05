@@ -17,14 +17,6 @@ Test the various cases.
 '''
 
 class Backup(object):
-    def copy_file(self, src, trg):
-        logging.info('Copy file {} to {}'.format(src, trg))
-        shutil.copy(src, trg)
-    def make_dir(self, trg):
-        logging.info('Make dir {}'.format(trg))
-        if not os.path.exists(trg):
-            os.mkdir(trg)
-
     def main(self):
         logging.basicConfig(level = logging.INFO)
 
@@ -51,9 +43,16 @@ class Backup(object):
         for dirName, subdirList, fileList in os.walk(source_dir):
             dir_part = dirName[len(source_dir)+1:]
             for dr in subdirList:
-                self.make_dir( os.path.join(target_dir, dir_part, dr) )
+                trg = os.path.join(target_dir, dir_part, dr)
+                logging.info('Make dir {}'.format(trg))
+                if not os.path.exists(trg):
+                    os.mkdir(trg)
+
             for fname in fileList:
-                self.copy_file(os.path.join(dirName, fname), os.path.join(target_dir, dir_part, fname))
+                src = os.path.join(dirName, fname)
+                trg = os.path.join(target_dir, dir_part, fname)
+                logging.info('Copy file {} to {}'.format(src, trg))
+                shutil.copy(src, trg)
 
         #for dirName, subdirList, fileList in os.walk(target_dir):
         #    dir_part = dirName[len(ce_dir)+1:]
