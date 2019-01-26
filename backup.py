@@ -48,8 +48,20 @@ class Backup(object):
                 commit = subprocess.check_output([git, 'commit', '-m', 'update'])
                 push = subprocess.check_output([git, 'push'])
 
-        source_dir = config['source']
-        self.backup_full_dir(source_dir, target_dir)
+        if 'source' in config:
+            source_dir = config['source']
+            self.backup_full_dir(source_dir, target_dir)
+        elif 'pairs' in config:
+            for pair in config['pairs']:
+                if os.path.exists(pair['src']):
+                    target_path = os.path.join(target_dir, pair['trg'])
+                    if not os.path.exists(target_path):
+                        os.mkdir(target_path)
+                    self.backup_full_dir(pair['src'], target_path)
+                else:
+                    raise Exception('Invalid configuration file - src')
+        else:
+            raise Exception('Invalid configuration file')
 
 
     def backup_full_dir(self, source_dir, target_dir):
