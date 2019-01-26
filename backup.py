@@ -31,18 +31,30 @@ class Backup(object):
             config = json.load(fh)
         #print(config)
 
-        target_dir = config['target']
-        source_dir = config['source']
-
         git = 'git'
 
-        if not os.path.exists(source_dir):
-            exit('Source directory "{source_dir}" does not exist'.format(source_dir = source_dir))
+        target_dir = config['target']
 
         if not os.path.exists(target_dir):
             exit('Target directory "{target_dir}" does not exist'.format(target_dir = target_dir))
 
         os.chdir(target_dir)
+
+        if args.git:
+            status = subprocess.check_output([git, 'status', '--porcelain'])
+            print(status)
+            if status:
+                add = subprocess.check_output([git, 'add', '.'])
+                commit = subprocess.check_output([git, 'commit', '-m', 'update'])
+                push = subprocess.check_output([git, 'push'])
+
+        source_dir = config['source']
+        self.backup_full_dir(source_dir, target_dir)
+
+
+    def backup_full_dir(self, source_dir, target_dir):
+        if not os.path.exists(source_dir):
+            exit('Source directory "{source_dir}" does not exist'.format(source_dir = source_dir))
 
         for dirName, subdirList, fileList in os.walk(source_dir):
             dir_part = dirName[len(source_dir)+1:]
@@ -81,14 +93,6 @@ class Backup(object):
                     os.remove(trg)
 
 
-
-        if args.git:
-            status = subprocess.check_output([git, 'status', '--porcelain'])
-            print(status)
-            if status:
-                add = subprocess.check_output([git, 'add', '.'])
-                commit = subprocess.check_output([git, 'commit', '-m', 'update'])
-                push = subprocess.check_output([git, 'push'])
 
 if __name__ == '__main__':
     Backup().main()
