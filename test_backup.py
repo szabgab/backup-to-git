@@ -129,10 +129,23 @@ def test_multi_dir_backup(tmpdir):
 
     with open(os.path.join(src_dir_1, 'a.txt'), 'w') as fh:
        fh.write('hello')
+    os.mkdir(os.path.join(src_dir_1, 'notes'))
+    os.mkdir(os.path.join(src_dir_1, 'notes', 'personal'))
+    with open(os.path.join(src_dir_1, 'notes', 'personal', 'diary.txt'), 'w') as fh:
+       fh.write('First entry')
+    with open(os.path.join(src_dir_1, 'notes', 'personal', 'todo.txt'), 'w') as fh:
+       fh.write('TODO list')
+
+    os.mkdir(os.path.join(src_dir_1, 'clients'))
+    with open(os.path.join(src_dir_1, 'clients', 'contacts.csv'), 'w') as fh:
+       fh.write('Name,email,phone')
 
     bck = Backup()
     bck.main()
     assert set(os.listdir(target_dir)) == set(['.git', 'some_backup'])
-    assert set(os.listdir(os.path.join(target_dir, 'some_backup'))) == set(['a.txt'])
+    assert set(os.listdir(os.path.join(target_dir, 'some_backup'))) == set(['a.txt', 'notes', 'clients'])
+    assert set(os.listdir(os.path.join(target_dir, 'some_backup', 'notes'))) == set(['personal'])
+    assert set(os.listdir(os.path.join(target_dir, 'some_backup', 'notes', 'personal'))) == set(['diary.txt', 'todo.txt'])
+    assert set(os.listdir(os.path.join(target_dir, 'some_backup', 'clients'))) == set(['contacts.csv'])
 
 
