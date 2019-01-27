@@ -122,10 +122,6 @@ def test_multi_dir_backup(tmpdir):
 
 
     sys.argv = ['backup', '--config', config_file]
-    bck = Backup()
-    bck.main()
-    assert set(os.listdir(target_dir)) == set(['.git', 'some_backup'])
-
 
     with open(os.path.join(src_dir_1, 'a.txt'), 'w') as fh:
        fh.write('hello')
