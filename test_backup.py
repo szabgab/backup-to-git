@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import sys
+import pytest
 
 from backup import Backup
 
@@ -90,6 +91,13 @@ def test_one_dir_backup(tmpdir):
     assert set(os.listdir(os.path.join(target_dir, 'songs', 'spanish'))) == set(['despacio.txt', 'fast.txt'])
     assert os.path.exists(os.path.join(target_dir, '.git', 'HEAD'))
 
+def test_no_params():
+    sys.argv = ['backup']
+    bck = Backup()
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        bck.main()
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 2
 
 def test_multi_dir_backup(tmpdir):
     tmp_dir = os.path.join(str(tmpdir), '2')  # Needed for Python 3.5 and older
