@@ -44,6 +44,7 @@ class Backup(object):
             status = subprocess.check_output([git, 'status', '--porcelain'])
             print(status)
             if status:
+                print("Commit files")
                 add = subprocess.check_output([git, 'add', '.'])
                 commit = subprocess.check_output([git, 'commit', '-m', 'update'])
                 push = subprocess.check_output([git, 'push'])
@@ -80,14 +81,14 @@ class Backup(object):
             for fname in fileList:
                 src = os.path.join(dirName, fname)
                 trg = os.path.join(target_dir, dir_part, fname)
-                logging.info('Copy file {} to {}'.format(src, trg))
+                #logging.info('Copy file {} to {}'.format(src, trg))
                 shutil.copy(src, trg)
 
         for dirName, subdirList, fileList in os.walk(target_dir):
             if '.git' in subdirList:
                 subdirList.remove('.git')
             dir_part = dirName[len(target_dir)+1:]
-            print("DIR: " + dir_part)
+            #print("DIR: " + dir_part)
             for dr in subdirList:
                 trg = os.path.join(target_dir, dir_part, dr)
                 src = os.path.join(source_dir, dir_part, dr)
@@ -98,8 +99,8 @@ class Backup(object):
             for fname in fileList:
                 src = os.path.join(source_dir, dir_part, fname)
                 trg = os.path.join(dirName, fname)
-                print("SRC: " + src)
-                print("TRG: " + trg)
+                #print("SRC: " + src)
+                #print("TRG: " + trg)
                 if not os.path.exists(src):
                     logging.info('Remove {}'.format(trg))
                     os.remove(trg)
