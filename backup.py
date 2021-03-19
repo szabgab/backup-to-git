@@ -20,23 +20,30 @@ class Backup(object):
         logging.basicConfig(level = logging.INFO)
         args, config = self.get_config()
 
-        git = 'git'
-
-        target_dir = config['target']
-
-        if not os.path.exists(target_dir):
-            exit('Target directory "{target_dir}" does not exist'.format(target_dir = target_dir))
-
-        os.chdir(target_dir)
+        self.copy_files(config)
 
         if args.git:
-            status = subprocess.check_output([git, 'status', '--porcelain'])
-            print(status)
-            if status:
-                print("Commit files")
-                add = subprocess.check_output([git, 'add', '.'])
-                commit = subprocess.check_output([git, 'commit', '-m', 'update'])
-                push = subprocess.check_output([git, 'push'])
+            self.commit_to_git(config)
+
+    def commit_to_git(self, config):
+        target_dir = config['target']
+        git = 'git'
+
+        os.chdir(target_dir)
+        status = subprocess.check_output([git, 'status', '--porcelain'])
+        print(status)
+        if status:
+            print("Commit files")
+            add = subprocess.check_output([git, 'add', '.'])
+            commit = subprocess.check_output([git, 'commit', '-m', 'update'])
+            push = subprocess.check_output([git, 'push'])
+
+
+    def copy_files(self, config):
+        target_dir = config['target']
+        if not os.path.exists(target_dir):
+            exit('Target directory "{target_dir}" does not exist'.format(target_dir = target_dir))
+        os.chdir(target_dir)
 
         if 'source' in config:
             source_dir = config['source']
