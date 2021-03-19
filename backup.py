@@ -18,18 +18,7 @@ Error handling
 class Backup(object):
     def main(self):
         logging.basicConfig(level = logging.INFO)
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--config', help='Config file', required=True)
-        parser.add_argument('--git',    help='Run the git commands', action='store_true')
-        args = parser.parse_args()
-
-        if not os.path.exists(args.config):
-            exit('"{}" does not exist'.format(args.config))
-
-        with open(args.config) as fh:
-            config = json.load(fh)
-        #print(config)
+        args, config = self.get_config()
 
         git = 'git'
 
@@ -63,6 +52,20 @@ class Backup(object):
                     raise Exception('Invalid configuration file - src')
         else:
             raise Exception('Invalid configuration file')
+
+    def get_config(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--config', help='Config file', required=True)
+        parser.add_argument('--git',    help='Run the git commands', action='store_true')
+        args = parser.parse_args()
+
+        if not os.path.exists(args.config):
+            exit('"{}" does not exist'.format(args.config))
+
+        with open(args.config) as fh:
+            config = json.load(fh)
+        #print(config)
+        return args, config
 
 
     def backup_full_dir(self, source_dir, target_dir):
